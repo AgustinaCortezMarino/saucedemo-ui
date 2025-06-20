@@ -1,0 +1,76 @@
+import { calculateTotalWithTax } from '../support/utils';
+
+describe('Checkout Flow - Happy Path', () => {
+  beforeEach(() => {
+    cy.login();
+    cy.addProductsToCart([
+      'sauce-labs-backpack',
+      'sauce-labs-bike-light',
+      'sauce-labs-bolt-t-shirt'
+    ]);
+    cy.get('.shopping_cart_link').click();
+    cy.get('[data-test="checkout"]').click();
+    cy.fillCheckoutForm('Tina', 'Sparkle', '1234');
+  });
+
+  it('should complete checkout and validate total price', () => {
+    let itemPrices: number[] = [];
+
+    cy.get('.inventory_item_price').each(($el) => {
+      const price = parseFloat($el.text().replace('$', ''));
+      itemPrices.push(price);
+    });
+
+    cy.get('.summary_tax_label').invoke('text').then((taxText) => {
+      const tax = parseFloat(taxText.replace('Tax: $', ''));
+      const expectedTotal = calculateTotalWithTax(itemPrices, tax);
+
+      cy.get('.summary_total_label').invoke('text').then((totalText) => {
+        const displayedTotal = parseFloat(totalText.replace('Total: $', ''));
+        expect(displayedTotal).to.be.closeTo(expectedTotal, 0.01);
+      });
+    });
+
+    cy.get('[data-test="finish"]').click();
+
+    cy.url().should('include', '/checkout-complete.html');
+    cy.get('.complete-header')
+      .should('be.visible')
+      .and('have.text', 'Thank you for your order!');
+    cy.get('.complete-text')
+      .should('contain.text', 'Your order has been dispatched');
+  });
+});
+// This test covers the happy path of the checkout flow, ensuring that the total price is calculated correctly
+
+describe('Checkout Flow - Negative Path', () => {
+  beforeEach(() => {
+    cy.login();
+    cy.addProductsToCart(['sauce-labs-backpack']);
+    cy.get('.shopping_cart_link').click();
+    cy.get('[data-test="checkout"]').click();
+  });
+
+  it('should show error if required fields are missing', () => {
+    // leave some fields empty and try to continue
+    cy.get('[data-test="continue"]').click();
+    cy.get('[data-test="error"]')
+      .should('be.visible')
+      .and('contain.text', 'Error: First Name is required');
+
+    // Complete only first name, but leave last name empty
+    cy.get('[data-test="firstName"]').type('Tina');
+    cy.get('[data-test="continue"]').click();
+    cy.get('[data-test="error"]')
+      .should('be.visible')
+      .and('contain.text', 'Error: Last Name is required');
+
+    // Complete first name and last name, but leave postal code empty
+    cy.get('[data-test="lastName"]').type('Sparkle');
+    cy.get('[data-test="continue"]').click();
+    cy.get('[data-test="error"]')
+      .should('be.visible')
+      .and('contain.text', 'Error: Postal Code is required');
+  });
+});
+// This test covers the negative path of the checkout flow, ensuring that appropriate error messages are displayed when required fields are missing
