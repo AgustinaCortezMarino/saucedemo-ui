@@ -13,6 +13,8 @@ describe('Checkout Flow - Happy Path', () => {
     cy.fillCheckoutForm('Tina', 'Sparkle', '1234');
   });
 
+// Test cases for the checkout process
+
   it('should complete checkout and validate total price', () => {
     let itemPrices: number[] = [];
 
@@ -32,7 +34,6 @@ describe('Checkout Flow - Happy Path', () => {
     });
 
     cy.get('[data-test="finish"]').click();
-
     cy.url().should('include', '/checkout-complete.html');
     cy.get('.complete-header')
       .should('be.visible')
@@ -41,8 +42,8 @@ describe('Checkout Flow - Happy Path', () => {
       .should('contain.text', 'Your order has been dispatched');
   });
 });
-// This test covers the happy path of the checkout flow, ensuring that the total price is calculated correctly
 
+// Test cases for the checkout process with negative scenarios
 describe('Checkout Flow - Negative Path', () => {
   beforeEach(() => {
     cy.login();
@@ -52,25 +53,15 @@ describe('Checkout Flow - Negative Path', () => {
   });
 
   it('should show error if required fields are missing', () => {
-    // leave some fields empty and try to continue
     cy.get('[data-test="continue"]').click();
-    cy.get('[data-test="error"]')
-      .should('be.visible')
-      .and('contain.text', 'Error: First Name is required');
+    cy.get('[data-test="error"]').should('be.visible').and('contain.text', 'Error: First Name is required');
 
-    // Complete only first name, but leave last name empty
     cy.get('[data-test="firstName"]').type('Tina');
     cy.get('[data-test="continue"]').click();
-    cy.get('[data-test="error"]')
-      .should('be.visible')
-      .and('contain.text', 'Error: Last Name is required');
+    cy.get('[data-test="error"]').should('be.visible').and('contain.text', 'Error: Last Name is required');
 
-    // Complete first name and last name, but leave postal code empty
     cy.get('[data-test="lastName"]').type('Sparkle');
     cy.get('[data-test="continue"]').click();
-    cy.get('[data-test="error"]')
-      .should('be.visible')
-      .and('contain.text', 'Error: Postal Code is required');
+    cy.get('[data-test="error"]').should('be.visible').and('contain.text', 'Error: Postal Code is required');
   });
 });
-// This test covers the negative path of the checkout flow, ensuring that appropriate error messages are displayed when required fields are missing

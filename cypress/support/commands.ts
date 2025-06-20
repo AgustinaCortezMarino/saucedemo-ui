@@ -20,3 +20,9 @@ Cypress.Commands.add('fillCheckoutForm', (firstName: string, lastName: string, z
   cy.get('[data-test="postalCode"]').type(zip);
   cy.get('[data-test="continue"]').click();
 });
+
+// Logout functionality
+Cypress.Commands.add('logout', () => {
+  cy.get('#react-burger-menu-btn').click();
+  cy.get('#logout_sidebar_link').should('be.visible').click();
+});

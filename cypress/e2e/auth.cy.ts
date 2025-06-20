@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 describe('Login Tests', () => {
   const baseUrl = 'https://www.saucedemo.com/';
 
@@ -6,6 +5,7 @@ describe('Login Tests', () => {
     cy.visit(baseUrl);
   });
 
+// Test cases for login functionality with valid credentials
   it('should login successfully with valid credentials', () => {
     cy.get('[data-test="username"]').type('standard_user');
     cy.get('[data-test="password"]').type('secret_sauce');
@@ -14,6 +14,8 @@ describe('Login Tests', () => {
     cy.url().should('include', '/inventory');
     cy.get('.inventory_list').should('exist');
   });
+
+// Test cases for login functionality with invalid credentials
 
   it('should show error on invalid login', () => {
     cy.get('[data-test="username"]').type('invalid_user');
