@@ -1,21 +1,4 @@
-import { LoginPage } from  '../pages/loginPage'
-
-describe('TC 1.1 - Valid Login', () => {
-  const loginPage = new LoginPage()
-
-  beforeEach(() => {
-    loginPage.visit()
-  })
-
-  it('should login successfully with valid credentials', () => {
-    cy.fixture('users').then((user) => {
-      loginPage.login(user.valid.username, user.valid.password)
-      cy.url().should('include', '/inventory')
-      cy.get('.title').should('contain', 'Products')
-    })
-  })
-})
-
+/// <reference types="cypress" />
 describe('Login Tests', () => {
   const baseUrl = 'https://www.saucedemo.com/';
 

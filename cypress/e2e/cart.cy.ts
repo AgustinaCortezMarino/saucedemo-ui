@@ -9,24 +9,18 @@ describe('Cart Tests', () => {
       .should('be.visible')
       .and('have.text', '1');
   });
-});
-
-describe('Cart Tests', () => {
-  beforeEach(() => {
-    cy.login(); 
-  });
 
   it('should add multiple products to the cart', () => {
-    // Agregamos el primero
+    // Adding first product
     cy.get('[data-test="add-to-cart-sauce-labs-backpack"]').click();
 
-    // Segundo
+    // second product
     cy.get('[data-test="add-to-cart-sauce-labs-bike-light"]').click();
 
-    // Tercero
+    // third product
     cy.get('[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]').click();
 
-    // Verificamos que el contador tenga el número 3
+    // Verify the cart badge
     cy.get('.shopping_cart_badge').should('have.text', '3');
   });
 });
@@ -35,27 +29,27 @@ describe('Cart Functionality - Remove Product', () => {
   beforeEach(() => {
     cy.login();
 
-    // Aseguramos productos en el carrito para testear la eliminación
+    // Ensure we have products in the cart before testing removal
     cy.get('[data-test="add-to-cart-sauce-labs-backpack"]').click();
     cy.get('[data-test="add-to-cart-sauce-labs-bike-light"]').click();
 
-    // Vamos al carrito
+    // Navigate to the cart
     cy.get('.shopping_cart_link').click();
   });
 
   it('should remove a product from the cart and update the badge correctly', () => {
-    // Validamos que hay 2 productos al inicio
+    // Validate that both products are in the cart
     cy.get('.cart_item').should('have.length', 2);
 
-    // Eliminamos uno
+    // delte one product
     cy.get('[data-test="remove-sauce-labs-backpack"]').click();
 
-    // Badge debería decir 1
+    // Badge should contain 1 product
     cy.get('.shopping_cart_badge')
       .should('be.visible')
       .and('have.text', '1');
 
-    // Validamos que sólo queda un producto y es el correcto
+    // Validate that the removed product is no longer in the cart
     cy.get('.cart_item')
       .should('have.length', 1)
       .and('contain.text', 'Sauce Labs Bike Light');
